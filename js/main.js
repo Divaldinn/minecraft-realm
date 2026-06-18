@@ -343,20 +343,37 @@ function initFormValidation() {
     if (!okN || !okE) return;
 
     submitBtn.disabled   = true;
-    submitBtn.textContent = '⋯ ENVIANDO...';
+    submitBtn.textContent = '⋯ VALIDANDO IDENTIDAD...';
     playSound('click', 0.5);
 
     try {
-      const res  = await fetch('https://api.web3forms.com/submit', { method: 'POST', body: new FormData(form) });
+      const formData = new FormData(form);
+      // Ensure gamertag is the key expected by the script
+      formData.set('gamertag', nicknameInput.value);
+
+      const res  = await fetch('https://script.google.com/macros/s/AKfycbxzCX0dM3Xtrc7Mk80YuQM-aiKB5AhnXsChBHz0KD3lDGIToWStbHUbg_R5Ki32A5RTgQ/exec', { 
+        method: 'POST', 
+        body: formData 
+      });
       const data = await res.json();
-      if (data.success) {
+      
+      if (data.status === "success") {
         form.style.display = 'none';
         if (successEl) { successEl.classList.add('visible'); playSound('success', 0.6); }
-      } else throw new Error(data.message);
-    } catch {
+      } else {
+        throw new Error(data.message || "Error al registrar");
+      }
+    } catch (err) {
       submitBtn.disabled    = false;
       submitBtn.textContent = '▶ REINTENTAR';
       submitBtn.style.background = 'linear-gradient(180deg, #c0392b 0%, #922b21 100%)';
+      
+      const hint = nicknameInput.parentElement.querySelector('.form-hint');
+      if (hint) {
+        hint.textContent = err.message.includes('Gamertag') ? 'Gamertag no encontrado en Xbox Live.' : 'Hubo un error de conexión.';
+        hint.className = 'form-hint error-msg';
+        nicknameInput.classList.add('error');
+      }
     }
   });
 }

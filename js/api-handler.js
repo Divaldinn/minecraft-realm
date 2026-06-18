@@ -5,15 +5,9 @@
 'use strict';
 
 const CONFIG = {
-  SHEETS_URL:   'TU_URL_DE_GOOGLE_SHEETS_AQUI',
+  SHEETS_URL:   'https://docs.google.com/spreadsheets/d/10KVo7i0rDrW_yfSfzRpXJ5ny94ZhpilfLmw-a81QniI/gviz/tq?tqx=out:json',
   MAX_PLAYERS:  10,
-  DEMO_PLAYERS: [
-    { nickname: 'Notch',       status: 'Verificado' },
-    { nickname: 'jeb_',        status: 'Verificado' },
-    { nickname: 'Dream',       status: 'Verificado' },
-    { nickname: 'Technoblade', status: 'Verificado' },
-    { nickname: 'Dinnerbone',  status: 'Verificado' },
-  ],
+  DEMO_PLAYERS: [],
 };
 
 const state = { players: [] };
@@ -36,7 +30,7 @@ async function loadPlayers() {
       );
       state.players = (json.table?.rows || [])
         .map(r => ({ nickname: r.c[0]?.v || '', status: r.c[2]?.v || '' }))
-        .filter(p => p.nickname && p.status === 'Verificado');
+        .filter(p => p.nickname && p.status === 'Aprobado');
       return;
     } catch {}
   }
@@ -51,7 +45,7 @@ export async function initStoryHero() {
   await loadPlayers();
 
   const verified = state.players
-    .filter(p => p.status === 'Verificado')
+    .filter(p => p.status === 'Aprobado')
     .slice(0, 10);
 
   // Los slots del hero tienen IDs char-0 .. char-9
@@ -104,7 +98,7 @@ export async function initPlayerGrid() {
   if (!state.players.length) await loadPlayers();
 
   const verified = state.players
-    .filter(p => p.status === 'Verificado')
+    .filter(p => p.status === 'Aprobado')
     .slice(0, CONFIG.MAX_PLAYERS);
 
   for (let i = 0; i < CONFIG.MAX_PLAYERS; i++) {
@@ -114,7 +108,7 @@ export async function initPlayerGrid() {
     if (i < verified.length) {
       loadGridSlot(slot, verified[i].nickname);
     } else {
-      slot.innerHTML = `<span class="empty-icon">?</span>`;
+      slot.innerHTML = `<div class="slot-empty"></div>`;
     }
   }
 
@@ -124,8 +118,13 @@ export async function initPlayerGrid() {
 }
 
 function loadGridSlot(slot, nickname) {
+  if (slot.dataset.loaded) return;
+  
   const obs = new IntersectionObserver((entries, o) => {
     if (entries[0].isIntersecting) {
+      if (slot.dataset.loaded) return;
+      slot.dataset.loaded = 'true';
+      
       const img = new Image();
       img.alt   = nickname;
       img.src   = `https://mc-heads.net/body/${encodeURIComponent(nickname)}/128`;
@@ -139,13 +138,13 @@ function loadGridSlot(slot, nickname) {
         slot.classList.add('loaded');
       };
       img.onerror = () => {
-        slot.innerHTML = `<span class="empty-icon">?</span>`;
+        slot.innerHTML = `<div class="slot-empty"></div>`;
       };
       o.unobserve(slot);
     }
   }, { rootMargin: '100px' });
   obs.observe(slot);
-  slot.innerHTML = `<span class="empty-icon">⋯</span>`;
+  slot.innerHTML = `<div class="slot-empty"></div>`;
 }
 
 function animateCounter(el, from, to, duration) {

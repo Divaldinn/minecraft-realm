@@ -54,20 +54,20 @@
     <!-- Partículas en canvas -->
     <canvas id="particle-canvas" aria-hidden="true"></canvas>
 
-    <!-- ── PERSONAJES DE FONDO (Story Mode) ── -->
+    <!-- ── PERSONAJES DE FONDO (Story Mode poses únicas) ── -->
     <div class="story-characters" aria-hidden="true">
-      <!-- Fila trasera (más pequeños, más transparentes) -->
-      <div class="char-slot char-back" id="char-5"></div>
-      <div class="char-slot char-back" id="char-6"></div>
-      <div class="char-slot char-back" id="char-7"></div>
-      <div class="char-slot char-back" id="char-8"></div>
-      <div class="char-slot char-back" id="char-9"></div>
-      <!-- Fila delantera (principales) -->
-      <div class="char-slot char-side"   id="char-0"></div>
-      <div class="char-slot char-near"   id="char-1"></div>
-      <div class="char-slot char-center" id="char-2"></div>
-      <div class="char-slot char-near"   id="char-3"></div>
-      <div class="char-slot char-side"   id="char-4"></div>
+      <!-- Fila trasera (fantasmas) -->
+      <div class="char-slot char-back char-back--1" id="char-5"></div>
+      <div class="char-slot char-back char-back--2" id="char-6"></div>
+      <div class="char-slot char-back char-back--3" id="char-7"></div>
+      <div class="char-slot char-back char-back--4" id="char-8"></div>
+      <div class="char-slot char-back char-back--5" id="char-9"></div>
+      <!-- Fila delantera (poses únicas) -->
+      <div class="char-slot char-side char-pose--sprint-left"  id="char-0"></div>
+      <div class="char-slot char-near char-pose--lean-left"   id="char-1"></div>
+      <div class="char-slot char-center char-pose--hero"      id="char-2"></div>
+      <div class="char-slot char-near char-pose--lean-right"  id="char-3"></div>
+      <div class="char-slot char-side char-pose--sprint-right" id="char-4"></div>
     </div>
 
     <!-- Gradiente dramático encima de los personajes -->
@@ -84,8 +84,8 @@
       </h1>
 
       <p class="hero-subtitle">
-        Un mundo para 10 aventureros. Survival, exploración y rol.<br/>
-        Sin griefing. Sin toxicidad. Solo épica.
+        <span class="subtitle-pill">Un mundo para 10 aventureros</span>
+        <span class="subtitle-pill">Survival &nbsp;·&nbsp; Rol &nbsp;·&nbsp; Sin griefing</span>
       </p>
 
       <!-- ── COUNTDOWN AL 5 DE AGOSTO ── -->

@@ -604,9 +604,17 @@ body {
   box-shadow: 0 10px 25px rgba(0,0,0,0.6), 0 0 15px rgba(200,160,32,0.2), 2px 2px 0 rgba(0,0,0,0.5);
   z-index: 5; animation: none;
 }
-.skin-slot .empty-icon {
-  font-family: var(--font-mc); font-size: clamp(0.9rem, 2.5vw, 1.5rem);
-  color: var(--text-dim);
+/* Espacio vacío con estética medieval (Silueta) */
+.slot-empty {
+  position: absolute;
+  inset: 0;
+  background: #111111; /* Fondo oscuro */
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%232a2a2a"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>');
+  background-size: 75%;
+  background-repeat: no-repeat;
+  background-position: center bottom;
+  opacity: 0.9;
+  z-index: 1;
 }
 .skin-slot img {
   width: 100%; height: 100%;
