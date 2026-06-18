@@ -1,104 +1,109 @@
 // ============================================
 // API-HANDLER.JS — Minecraft Realm
-// Manejo de Crafatar API y carga de skins
+// Carga skins para GRID y para HERO Story Mode
 // ============================================
-
 'use strict';
 
-// ── Configuración ──────────────────────────────────────
 const CONFIG = {
-  // Reemplaza con tu URL de Google Sheets publicado como JSON
-  // Formato: https://docs.google.com/spreadsheets/d/TU_ID/gviz/tq?tqx=out:json&sheet=Jugadores
-  SHEETS_URL: 'TU_URL_DE_GOOGLE_SHEETS_AQUI',
-
-  // URL base de Crafatar para renders de cuerpo completo
-  CRAFATAR_BASE: 'https://crafatar.com/renders/body',
-
-  // Parámetros de Crafatar
-  CRAFATAR_PARAMS: '?overlay&scale=4',
-
-  // Cuántos jugadores mostrar en el grid
-  MAX_PLAYERS: 10,
-
-  // Nicknames de ejemplo para mostrar mientras no haya Google Sheets configurado
-  // ¡Cámbialos por los de tus jugadores reales!
+  SHEETS_URL:   'TU_URL_DE_GOOGLE_SHEETS_AQUI',
+  MAX_PLAYERS:  10,
   DEMO_PLAYERS: [
-    // Estos son nombres de Java Edition para demostración visual.
-    // Para Bedrock, el sistema usa el Gamertag de Xbox.
-    { nickname: 'Notch',    status: 'Verificado' },
-    { nickname: 'jeb_',     status: 'Verificado' },
-    { nickname: 'Dream',    status: 'Verificado' },
+    { nickname: 'Notch',       status: 'Verificado' },
+    { nickname: 'jeb_',        status: 'Verificado' },
+    { nickname: 'Dream',       status: 'Verificado' },
     { nickname: 'Technoblade', status: 'Verificado' },
     { nickname: 'Dinnerbone',  status: 'Verificado' },
   ],
 };
 
-// ── Estado global ──────────────────────────────────────
-const state = {
-  players: [],
-  loadedCount: 0,
-};
+const state = { players: [] };
 
-// ── Inicialización ──────────────────────────────────────
-export async function initPlayerGrid() {
-  try {
-    // 1. Intentar cargar desde Google Sheets
-    if (CONFIG.SHEETS_URL && !CONFIG.SHEETS_URL.includes('TU_URL')) {
-      state.players = await fetchFromSheets();
+// ── Skin URL (mc-heads acepta nombres directamente) ──
+function skinUrl(nickname) {
+  return `https://mc-heads.net/body/${encodeURIComponent(nickname)}/256`;
+}
+
+// ── Cargar datos de jugadores ────────────────────────
+async function loadPlayers() {
+  if (CONFIG.SHEETS_URL && !CONFIG.SHEETS_URL.includes('TU_URL')) {
+    try {
+      const res  = await fetch(CONFIG.SHEETS_URL, { cache: 'no-store' });
+      const text = await res.text();
+      const json = JSON.parse(
+        text.replace(/^\/\*O_o\*\/\s*/, '')
+            .replace(/^google\.visualization\.Query\.setResponse\(/, '')
+            .replace(/\);?\s*$/, '')
+      );
+      state.players = (json.table?.rows || [])
+        .map(r => ({ nickname: r.c[0]?.v || '', status: r.c[2]?.v || '' }))
+        .filter(p => p.nickname && p.status === 'Verificado');
+      return;
+    } catch {}
+  }
+  // Fallback: demo players
+  state.players = CONFIG.DEMO_PLAYERS;
+}
+
+// ════════════════════════════════════════
+// HERO — Personajes estilo Story Mode
+// ════════════════════════════════════════
+export async function initStoryHero() {
+  await loadPlayers();
+
+  const verified = state.players
+    .filter(p => p.status === 'Verificado')
+    .slice(0, 10);
+
+  // Los slots del hero tienen IDs char-0 .. char-9
+  // El orden visual Story Mode:
+  // Fila trasera: char-5, char-6, char-7, char-8, char-9
+  // Fila frontal: char-0(side), char-1(near), char-2(center), char-3(near), char-4(side)
+  // Cargamos los más verificados en las posiciones del frente primero
+  const frontSlots = [2, 1, 3, 0, 4];    // center primero, luego near, luego sides
+  const backSlots  = [7, 6, 8, 5, 9];
+
+  const allOrder = [...frontSlots, ...backSlots];
+
+  for (let i = 0; i < allOrder.length; i++) {
+    const slotId = `char-${allOrder[i]}`;
+    const slot   = document.getElementById(slotId);
+    if (!slot) continue;
+
+    if (i < verified.length) {
+      loadHeroChar(slot, verified[i].nickname, i * 150);
     } else {
-      // Usar datos de demostración si no hay Sheets configurado
-      console.info('[Realm] Usando jugadores de demostración. Configura SHEETS_URL para datos reales.');
-      state.players = CONFIG.DEMO_PLAYERS;
+      // Slot vacío — mostrar silueta oscura
+      slot.innerHTML = `<div class="char-empty"></div>`;
     }
-
-    // 2. Renderizar los slots
-    await renderPlayerSlots();
-
-    // 3. Actualizar contador
-    updatePlayerCounter(state.players.length);
-
-  } catch (err) {
-    console.error('[Realm] Error al cargar jugadores:', err);
-    // Fallback: mostrar demos si todo falla
-    state.players = CONFIG.DEMO_PLAYERS;
-    await renderPlayerSlots();
   }
 }
 
-// ── Fetch desde Google Sheets ──────────────────────────
-async function fetchFromSheets() {
-  const response = await fetch(CONFIG.SHEETS_URL, {
-    mode: 'cors',
-    cache: 'no-store',
-  });
-
-  if (!response.ok) throw new Error(`HTTP ${response.status}`);
-
-  const text = await response.text();
-
-  // Google Sheets devuelve JSONP, hay que limpiar el prefijo
-  // Formato: /*O_o*/\ngoogle.visualization.Query.setResponse({...});
-  const jsonText = text
-    .replace(/^\/\*O_o\*\/\s*/, '')
-    .replace(/^google\.visualization\.Query\.setResponse\(/, '')
-    .replace(/\);?\s*$/, '');
-
-  const data = JSON.parse(jsonText);
-  const rows = data.table?.rows || [];
-
-  // Mapear filas: col 0 = Nickname, col 1 = Correo, col 2 = Estado
-  return rows
-    .map(row => ({
-      nickname: row.c[0]?.v || '',
-      correo:   row.c[1]?.v || '',
-      status:   row.c[2]?.v || 'Pendiente',
-    }))
-    .filter(p => p.nickname && p.status === 'Verificado');
+function loadHeroChar(slot, nickname, delay) {
+  setTimeout(() => {
+    const img = new Image();
+    img.alt   = nickname;
+    img.src   = skinUrl(nickname);
+    img.style.cssText = 'width:100%;height:100%;object-fit:contain;object-position:bottom;image-rendering:pixelated;';
+    img.onload = () => {
+      slot.innerHTML = '';
+      slot.appendChild(img);
+      slot.classList.add('loaded');
+    };
+    img.onerror = () => {
+      // Fallback Steve
+      img.src = 'https://mc-heads.net/body/MHF_Steve/256';
+    };
+  }, delay);
 }
 
-// ── Renderizar slots de skins ──────────────────────────
-async function renderPlayerSlots() {
-  const verifiedPlayers = state.players
+// ════════════════════════════════════════
+// GRID DE JUGADORES (sección #players)
+// ════════════════════════════════════════
+export async function initPlayerGrid() {
+  // Players ya fueron cargados en initStoryHero, pero si se llama solo:
+  if (!state.players.length) await loadPlayers();
+
+  const verified = state.players
     .filter(p => p.status === 'Verificado')
     .slice(0, CONFIG.MAX_PLAYERS);
 
@@ -106,154 +111,48 @@ async function renderPlayerSlots() {
     const slot = document.getElementById(`slot-${i}`);
     if (!slot) continue;
 
-    if (i < verifiedPlayers.length) {
-      const player = verifiedPlayers[i];
-      // Carga lazy: solo si está en el viewport o cerca
-      loadSkinWhenVisible(slot, player.nickname, i);
+    if (i < verified.length) {
+      loadGridSlot(slot, verified[i].nickname);
     } else {
-      // Slot vacío
-      setEmptySlot(slot);
+      slot.innerHTML = `<span class="empty-icon">?</span>`;
     }
   }
-}
 
-// ── Carga lazy con IntersectionObserver ───────────────
-function loadSkinWhenVisible(slot, nickname, index) {
-  const observer = new IntersectionObserver(
-    (entries, obs) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          loadSkin(slot, nickname);
-          obs.unobserve(slot);
-        }
-      });
-    },
-    { rootMargin: '100px', threshold: 0 }
-  );
-  observer.observe(slot);
-
-  // Placeholder mientras carga
-  slot.innerHTML = `
-    <span class="empty-icon" aria-hidden="true">⋯</span>
-    <span class="name-tag">${escapeHtml(nickname)}</span>
-  `;
-}
-
-// ── Cargar una skin específica ─────────────────────────
-async function loadSkin(slot, nickname) {
-  return new Promise(resolve => {
-    // Crafatar usa UUIDs para Java. Para Bedrock con el gamertag,
-    // usamos un proxy que resuelve el UUID via API de Mojang.
-    // Si el jugador es Bedrock, se intenta con el gamertag directamente.
-    const skinUrl = buildSkinUrl(nickname);
-
-    const img = new Image();
-    img.alt = nickname;
-    img.loading = 'lazy';
-    img.decoding = 'async';
-
-    img.onload = () => {
-      // Limpiar slot y mostrar skin
-      slot.innerHTML = '';
-      slot.appendChild(img);
-
-      // Añadir name tag
-      const nameTag = document.createElement('span');
-      nameTag.className = 'name-tag';
-      nameTag.textContent = nickname;
-      slot.appendChild(nameTag);
-
-      slot.classList.add('loaded');
-      slot.setAttribute('aria-label', `Jugador: ${nickname}`);
-
-      // Efecto de brillo al cargar
-      triggerPickupEffect(slot);
-
-      state.loadedCount++;
-      resolve(true);
-    };
-
-    img.onerror = () => {
-      // Si falla la carga, mostrar silueta de Steve
-      setFallbackSkin(slot, nickname);
-      resolve(false);
-    };
-
-    img.src = skinUrl;
-  });
-}
-
-// ── Construir URL de skin ──────────────────────────────
-function buildSkinUrl(nickname) {
-  // Crafatar acepta UUIDs. Como alternativa directa para demos,
-  // usamos el endpoint de Minotar que acepta nombres directamente.
-  // Para producción con Bedrock, se recomienda resolver el XUID via tu Apps Script.
-  return `https://mc-heads.net/body/${encodeURIComponent(nickname)}/128`;
-}
-
-// ── Slot vacío ─────────────────────────────────────────
-function setEmptySlot(slot) {
-  slot.innerHTML = `<span class="empty-icon" aria-hidden="true">?</span>`;
-  slot.classList.remove('loaded');
-  slot.removeAttribute('aria-label');
-}
-
-// ── Fallback (skin por defecto) ────────────────────────
-function setFallbackSkin(slot, nickname) {
-  // Usar la skin de Steve como fallback
-  const img = document.createElement('img');
-  img.src = 'https://mc-heads.net/body/MHF_Steve/128';
-  img.alt = nickname;
-  img.style.opacity = '0.4';
-
-  slot.innerHTML = '';
-  slot.appendChild(img);
-
-  const nameTag = document.createElement('span');
-  nameTag.className = 'name-tag';
-  nameTag.textContent = nickname;
-  slot.appendChild(nameTag);
-
-  slot.classList.add('loaded');
-}
-
-// ── Efecto visual de "item pickup" ─────────────────────
-function triggerPickupEffect(slot) {
-  slot.style.animation = 'itemPickup 0.6s ease-out, skinAppear 0.5s ease-out';
-  setTimeout(() => { slot.style.animation = ''; }, 700);
-}
-
-// ── Actualizar contador de jugadores ───────────────────
-export function updatePlayerCounter(count) {
+  // Actualizar contador
   const countEl = document.querySelector('.player-counter .count');
-  if (!countEl) return;
+  if (countEl) animateCounter(countEl, 0, verified.length, 1000);
+}
 
-  // Animación de conteo
-  animateCounter(countEl, 0, count, 1200);
+function loadGridSlot(slot, nickname) {
+  const obs = new IntersectionObserver((entries, o) => {
+    if (entries[0].isIntersecting) {
+      const img = new Image();
+      img.alt   = nickname;
+      img.src   = `https://mc-heads.net/body/${encodeURIComponent(nickname)}/128`;
+      img.onload = () => {
+        slot.innerHTML = '';
+        slot.appendChild(img);
+        const tag = document.createElement('span');
+        tag.className   = 'name-tag';
+        tag.textContent = nickname;
+        slot.appendChild(tag);
+        slot.classList.add('loaded');
+      };
+      img.onerror = () => {
+        slot.innerHTML = `<span class="empty-icon">?</span>`;
+      };
+      o.unobserve(slot);
+    }
+  }, { rootMargin: '100px' });
+  obs.observe(slot);
+  slot.innerHTML = `<span class="empty-icon">⋯</span>`;
 }
 
 function animateCounter(el, from, to, duration) {
   const start = performance.now();
-  const update = (now) => {
-    const elapsed = now - start;
-    const progress = Math.min(elapsed / duration, 1);
-    const eased = 1 - Math.pow(1 - progress, 3); // ease-out cubic
-    const current = Math.round(from + (to - from) * eased);
-    el.textContent = `${current} / ${CONFIG.MAX_PLAYERS} jugadores`;
-
-    if (progress < 1) requestAnimationFrame(update);
-  };
-  requestAnimationFrame(update);
+  (function step(now) {
+    const t = Math.min((now - start) / duration, 1);
+    el.textContent = `${Math.round(from + (to - from) * (1 - Math.pow(1 - t, 3)))} / 10 jugadores`;
+    if (t < 1) requestAnimationFrame(step);
+  })(performance.now());
 }
-
-// ── Utilidades ─────────────────────────────────────────
-function escapeHtml(str) {
-  return str
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
-}
-
-// ── Exportar para uso en main.js ───────────────────────
-export { CONFIG, state };

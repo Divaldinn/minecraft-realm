@@ -3,40 +3,37 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <meta name="theme-color" content="#0d0e0f" />
+  <meta name="theme-color" content="#0a0c0a" />
 
-  <!-- SEO -->
-  <title>Realm Bedrock — Servidor Survival de Minecraft</title>
-  <meta name="description" content="Únete a nuestro Realm de Minecraft Bedrock. Servidor survival con roleplay, 10 jugadores verificados y comunidad activa. Regístrate aquí." />
-  <meta name="keywords" content="Minecraft Bedrock, Realm, servidor survival, roleplay, registro jugadores" />
-  <meta name="author" content="Realm Bedrock Admin" />
+  <title>Realm Bedrock — Abre el 5 de Agosto</title>
+  <meta name="description" content="Únete a nuestro Realm de Minecraft Bedrock Edition. Servidor survival con roleplay, 10 jugadores verificados. Abre el 5 de Agosto." />
 
-  <!-- Open Graph (para compartir en WhatsApp/Discord) -->
-  <meta property="og:title"       content="Realm Bedrock — Servidor Survival" />
+  <!-- Open Graph -->
+  <meta property="og:title"       content="Realm Bedrock — Abre el 5 de Agosto" />
   <meta property="og:description" content="Servidor Minecraft Bedrock con registro verificado. ¡Únete ahora!" />
   <meta property="og:type"        content="website" />
-  <meta property="og:image"       content="assets/og-image.png" />
 
-  <!-- Favicon inline SVG -->
+  <!-- Favicon -->
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%234caf50'/><rect x='8' y='8' width='16' height='16' fill='%232e7d32'/><rect x='12' y='12' width='4' height='4' fill='%23000'/><rect x='16' y='12' width='4' height='4' fill='%23000'/></svg>" />
 
-  <!-- Estilos -->
+  <!-- Press Start 2P — fuente pixel art estilo Minecraft (sin necesidad de TTF) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+
   <link rel="stylesheet" href="css/style.css" />
   <link rel="stylesheet" href="css/animations.css" />
 
-  <!-- Preconectar a APIs externas -->
   <link rel="preconnect" href="https://mc-heads.net" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 </head>
 
 <body>
 
-  <!-- ════════════════════════════════════
-       NAVBAR FIJA (aparece al hacer scroll)
-  ════════════════════════════════════ -->
+  <!-- ══════════════════════════════════
+       NAVBAR
+  ══════════════════════════════════ -->
   <nav id="navbar" aria-label="Navegación principal">
-    <a href="#hero" class="nav-logo" aria-label="Inicio">⛏ REALM BEDROCK</a>
+    <a href="#hero" class="nav-logo">⛏ REALM</a>
     <ul class="nav-links" role="list">
       <li><a href="#players">Jugadores</a></li>
       <li><a href="#rules">Reglas</a></li>
@@ -45,159 +42,141 @@
   </nav>
 
 
-  <!-- ════════════════════════════════════
-       HERO SECTION — Animación Trailer
-  ════════════════════════════════════ -->
+  <!-- ══════════════════════════════════
+       HERO — Estilo Minecraft Story Mode
+       Personajes de fondo, título encima
+  ══════════════════════════════════ -->
   <section id="hero" aria-label="Bienvenida al Realm">
-    <!-- Canvas de partículas flotantes -->
+
+    <!-- Partículas en canvas -->
     <canvas id="particle-canvas" aria-hidden="true"></canvas>
 
+    <!-- ── PERSONAJES DE FONDO (Story Mode) ── -->
+    <div class="story-characters" aria-hidden="true">
+      <!-- Fila trasera (más pequeños, más transparentes) -->
+      <div class="char-slot char-back" id="char-5"></div>
+      <div class="char-slot char-back" id="char-6"></div>
+      <div class="char-slot char-back" id="char-7"></div>
+      <div class="char-slot char-back" id="char-8"></div>
+      <div class="char-slot char-back" id="char-9"></div>
+      <!-- Fila delantera (principales) -->
+      <div class="char-slot char-side"   id="char-0"></div>
+      <div class="char-slot char-near"   id="char-1"></div>
+      <div class="char-slot char-center" id="char-2"></div>
+      <div class="char-slot char-near"   id="char-3"></div>
+      <div class="char-slot char-side"   id="char-4"></div>
+    </div>
+
+    <!-- Gradiente dramático encima de los personajes -->
+    <div class="hero-overlay" aria-hidden="true"></div>
+
+    <!-- ── CONTENIDO ── -->
     <div class="hero-content container">
 
-      <!-- Tag de servidor -->
-      <p class="server-tag" aria-label="Tipo de servidor">
-        ◈ SERVIDOR SURVIVAL · BEDROCK EDITION ◈
-      </p>
+      <p class="server-tag">◈ BEDROCK EDITION · SURVIVAL ◈</p>
 
-      <!-- Título animado con efecto de letras cayendo -->
-      <!-- Cada .title-line se procesa por JS para animar letra por letra -->
       <h1 class="hero-title" aria-label="Bienvenidos al Realm">
         <span class="title-line">BIENVENIDOS</span>
-        <span class="word-break"></span>
         <span class="title-line highlight">AL REALM</span>
       </h1>
 
-      <!-- Subtítulo -->
       <p class="hero-subtitle">
-        Un servidor Bedrock de 10 jugadores verificados. Survival, exploración
-        y roleplay en un mundo compartido sin griefing.
+        Un mundo para 10 aventureros. Survival, exploración y rol.<br/>
+        Sin griefing. Sin toxicidad. Solo épica.
       </p>
 
-      <!-- Contador de jugadores activos -->
-      <div class="player-counter" aria-live="polite">
-        <span class="dot" aria-hidden="true"></span>
-        <span class="label">SERVIDOR ACTIVO</span>
-        <span class="count" id="player-count">0 / 10 jugadores</span>
+      <!-- ── COUNTDOWN AL 5 DE AGOSTO ── -->
+      <div class="countdown-wrapper" aria-label="Cuenta regresiva para la apertura">
+        <p class="countdown-label">EL SERVIDOR ABRE EN:</p>
+        <div class="countdown-grid">
+          <div class="countdown-block">
+            <span class="countdown-num" id="cd-days">00</span>
+            <span class="countdown-unit">DÍAS</span>
+          </div>
+          <span class="countdown-sep" aria-hidden="true">:</span>
+          <div class="countdown-block">
+            <span class="countdown-num" id="cd-hours">00</span>
+            <span class="countdown-unit">HORAS</span>
+          </div>
+          <span class="countdown-sep" aria-hidden="true">:</span>
+          <div class="countdown-block">
+            <span class="countdown-num" id="cd-mins">00</span>
+            <span class="countdown-unit">MIN</span>
+          </div>
+          <span class="countdown-sep" aria-hidden="true">:</span>
+          <div class="countdown-block">
+            <span class="countdown-num" id="cd-secs">00</span>
+            <span class="countdown-unit">SEG</span>
+          </div>
+        </div>
+        <p class="countdown-date">5 DE AGOSTO · BEDROCK EDITION</p>
       </div>
 
-      <!-- Botones de acción -->
+      <!-- Botones CTA -->
       <div class="hero-actions">
         <a href="#register" class="mc-btn mc-btn--primary" id="btn-hero-register">
-          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
-            <rect x="1" y="1" width="12" height="12" rx="1" stroke="currentColor" stroke-width="1.5"/>
-            <path d="M4.5 7H9.5M7 4.5V9.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="square"/>
-          </svg>
-          REGISTRARSE
+          ▶ REGISTRARSE
         </a>
         <a href="#rules" class="mc-btn mc-btn--secondary" id="btn-hero-rules">
-          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
-            <rect x="1" y="3" width="12" height="1.5" fill="currentColor"/>
-            <rect x="1" y="6.5" width="8" height="1.5" fill="currentColor"/>
-            <rect x="1" y="10" width="10" height="1.5" fill="currentColor"/>
-          </svg>
-          VER REGLAS
+          ☰ VER REGLAS
         </a>
       </div>
 
     </div>
 
     <!-- Flecha de scroll -->
-    <div class="scroll-hint" aria-hidden="true" style="
-      position:absolute; bottom:2rem; left:50%; transform:translateX(-50%);
-      font-family:var(--font-mc); font-size:0.55rem; color:var(--color-text-dim);
-      letter-spacing:0.2em; display:flex; flex-direction:column; align-items:center; gap:0.5rem;
-      animation: fadeSlideUp 1s ease 2.5s both;
-    ">
-      <span>SCROLL</span>
-      <svg width="12" height="18" viewBox="0 0 12 18" fill="none">
-        <path d="M6 1L6 16M1 11L6 16L11 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="square"/>
-      </svg>
-    </div>
+    <div class="scroll-hint" aria-hidden="true">▼</div>
+
   </section>
 
 
-  <!-- ════════════════════════════════════
-       SECCIÓN: JUGADORES (10 SKIN SLOTS)
-  ════════════════════════════════════ -->
+  <!-- ══════════════════════════════════
+       JUGADORES — 10 slots pequeños
+       (El Story Mode está arriba en el hero)
+  ══════════════════════════════════ -->
   <section id="players" aria-label="Jugadores del Realm">
     <div class="container">
 
       <header class="section-header pre-animate">
-        <span class="section-tag">◈ MIEMBROS ACTIVOS</span>
-        <h2>Los aventureros del Realm</h2>
-        <p>10 lugares disponibles. Slots grises = cupo disponible.</p>
+        <span class="section-tag">◈ MIEMBROS</span>
+        <h2>Los 10 Aventureros</h2>
+        <p>Solo jugadores verificados aparecen aquí. Slots grises = cupo disponible.</p>
       </header>
 
-      <!-- Grid 5×2 de skins -->
-      <div class="skin-grid" role="list" aria-label="Slots de jugadores">
-        <div class="skin-slot" id="slot-0" role="listitem" aria-label="Slot 1"></div>
-        <div class="skin-slot" id="slot-1" role="listitem" aria-label="Slot 2"></div>
-        <div class="skin-slot" id="slot-2" role="listitem" aria-label="Slot 3"></div>
-        <div class="skin-slot" id="slot-3" role="listitem" aria-label="Slot 4"></div>
-        <div class="skin-slot" id="slot-4" role="listitem" aria-label="Slot 5"></div>
-        <div class="skin-slot" id="slot-5" role="listitem" aria-label="Slot 6"></div>
-        <div class="skin-slot" id="slot-6" role="listitem" aria-label="Slot 7"></div>
-        <div class="skin-slot" id="slot-7" role="listitem" aria-label="Slot 8"></div>
-        <div class="skin-slot" id="slot-8" role="listitem" aria-label="Slot 9"></div>
-        <div class="skin-slot" id="slot-9" role="listitem" aria-label="Slot 10"></div>
+      <div class="skin-grid" role="list">
+        <div class="skin-slot" id="slot-0" role="listitem"></div>
+        <div class="skin-slot" id="slot-1" role="listitem"></div>
+        <div class="skin-slot" id="slot-2" role="listitem"></div>
+        <div class="skin-slot" id="slot-3" role="listitem"></div>
+        <div class="skin-slot" id="slot-4" role="listitem"></div>
+        <div class="skin-slot" id="slot-5" role="listitem"></div>
+        <div class="skin-slot" id="slot-6" role="listitem"></div>
+        <div class="skin-slot" id="slot-7" role="listitem"></div>
+        <div class="skin-slot" id="slot-8" role="listitem"></div>
+        <div class="skin-slot" id="slot-9" role="listitem"></div>
       </div>
 
     </div>
   </section>
 
 
-  <!-- ════════════════════════════════════
-       SEPARADOR DECORATIVO (LAVA)
-  ════════════════════════════════════ -->
-  <div class="wave-separator" aria-hidden="true">
-    <svg viewBox="0 0 800 40" preserveAspectRatio="none">
-      <defs>
-        <linearGradient id="lava-grad" x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0%"   stop-color="#1a0a00"/>
-          <stop offset="25%"  stop-color="#4a1500"/>
-          <stop offset="50%"  stop-color="#6b2000"/>
-          <stop offset="75%"  stop-color="#4a1500"/>
-          <stop offset="100%" stop-color="#1a0a00"/>
-        </linearGradient>
-      </defs>
-      <!-- Patrón pixelado de "bloques" -->
-      <rect width="800" height="40" fill="url(#lava-grad)"/>
-      <!-- Fila de bloques decorativos (pixel art) -->
-      <g fill="rgba(255,100,0,0.15)">
-        <rect x="0"   y="0" width="40" height="8"/>
-        <rect x="80"  y="0" width="40" height="8"/>
-        <rect x="160" y="0" width="40" height="8"/>
-        <rect x="240" y="0" width="40" height="8"/>
-        <rect x="320" y="0" width="40" height="8"/>
-        <rect x="400" y="0" width="40" height="8"/>
-        <rect x="480" y="0" width="40" height="8"/>
-        <rect x="560" y="0" width="40" height="8"/>
-        <rect x="640" y="0" width="40" height="8"/>
-        <rect x="720" y="0" width="40" height="8"/>
-      </g>
-    </svg>
-  </div>
-
-
-  <!-- ════════════════════════════════════
-       SECCIÓN: REGLAS DEL SERVIDOR
-  ════════════════════════════════════ -->
+  <!-- ══════════════════════════════════
+       REGLAS
+  ══════════════════════════════════ -->
   <section id="rules" aria-label="Reglas del servidor">
     <div class="container">
 
       <header class="section-header pre-animate">
         <span class="section-tag">◈ REGLAMENTO</span>
         <h2>Reglas del Servidor</h2>
-        <p>Léelas antes de registrarte. El desconocimiento no exime.</p>
+        <p>Léelas antes de registrarte.</p>
       </header>
 
       <div class="rules-grid">
 
-        <!-- Regla 1: No Robar -->
-        <article class="rule-card pre-animate" style="--rule-color: #e53935;">
+        <article class="rule-card pre-animate" style="--rule-color:#e53935">
           <span class="rule-badge rule-badge--no">PROHIBIDO</span>
-          <!-- Icono SVG: Cofre -->
-          <svg class="rule-icon" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <svg class="rule-icon" viewBox="0 0 32 32" aria-hidden="true">
             <rect x="2"  y="10" width="28" height="18" fill="#8B5E3C"/>
             <rect x="2"  y="10" width="28" height="5"  fill="#6B4423"/>
             <rect x="3"  y="11" width="26" height="3"  fill="#A0723E"/>
@@ -210,70 +189,57 @@
           </svg>
           <div class="rule-text">
             <h3>No Robar</h3>
-            <p>Prohibido tomar ítems de cofres ajenos sin permiso explícito del dueño. Incluye granjas y bases.</p>
+            <p>Prohibido tomar ítems de cofres ajenos sin permiso. Incluye granjas y bases.</p>
           </div>
         </article>
 
-        <!-- Regla 2: Zona de Spawn -->
-        <article class="rule-card pre-animate" style="--rule-color: #ff9800;">
+        <article class="rule-card pre-animate" style="--rule-color:#ff9800">
           <span class="rule-badge rule-badge--no">PROHIBIDO</span>
-          <!-- Icono SVG: Mapa -->
-          <svg class="rule-icon" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <svg class="rule-icon" viewBox="0 0 32 32" aria-hidden="true">
             <rect x="4"  y="4"  width="24" height="24" fill="#E8D5A3"/>
             <rect x="5"  y="5"  width="22" height="22" fill="#F5E6C0"/>
             <rect x="4"  y="4"  width="2"  height="24" fill="#8B6914"/>
             <rect x="26" y="4"  width="2"  height="24" fill="#8B6914"/>
             <rect x="4"  y="4"  width="24" height="2"  fill="#8B6914"/>
             <rect x="4"  y="26" width="24" height="2"  fill="#8B6914"/>
-            <!-- Líneas del mapa -->
             <rect x="7"  y="9"  width="10" height="2"  fill="#A09060" opacity="0.7"/>
             <rect x="7"  y="13" width="15" height="2"  fill="#A09060" opacity="0.7"/>
             <rect x="7"  y="17" width="8"  height="2"  fill="#A09060" opacity="0.7"/>
             <rect x="7"  y="21" width="13" height="2"  fill="#A09060" opacity="0.7"/>
-            <!-- Marcador de posición -->
             <rect x="20" y="10" width="4"  height="6"  fill="#E53935"/>
             <rect x="21" y="9"  width="2"  height="2"  fill="#E53935"/>
           </svg>
           <div class="rule-text">
             <h3>Área del Spawn</h3>
-            <p>Mantenerse en el área delimitada del spawn inicial. No explorar fuera de los chunks acordados sin avisar.</p>
+            <p>No alejarse del área delimitada sin avisar al grupo.</p>
           </div>
         </article>
 
-        <!-- Regla 3: Combate -->
-        <article class="rule-card pre-animate" style="--rule-color: #9c27b0;">
+        <article class="rule-card pre-animate" style="--rule-color:#9c27b0">
           <span class="rule-badge rule-badge--no">CON PACTO</span>
-          <!-- Icono SVG: Espada de Diamante -->
-          <svg class="rule-icon" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-            <!-- Hoja -->
+          <svg class="rule-icon" viewBox="0 0 32 32" aria-hidden="true">
             <rect x="14" y="2"  width="4"  height="4"  fill="#5BC8D4"/>
             <rect x="12" y="6"  width="8"  height="4"  fill="#4DB8C4"/>
             <rect x="14" y="10" width="4"  height="2"  fill="#5BC8D4"/>
             <rect x="13" y="12" width="6"  height="2"  fill="#4DB8C4"/>
             <rect x="14" y="14" width="4"  height="2"  fill="#5BC8D4"/>
             <rect x="14" y="16" width="3"  height="2"  fill="#4DB8C4"/>
-            <!-- Brillo -->
             <rect x="15" y="4"  width="2"  height="8"  fill="#9EE8F0" opacity="0.5"/>
-            <!-- Guardia -->
             <rect x="10" y="18" width="12" height="3"  fill="#8B6914"/>
             <rect x="11" y="18" width="10" height="1"  fill="#C9A020"/>
-            <!-- Mango -->
             <rect x="14" y="21" width="4"  height="7"  fill="#7B4F2E"/>
             <rect x="15" y="22" width="2"  height="5"  fill="#9B6F4E"/>
-            <!-- Punta del mango -->
             <rect x="13" y="28" width="6"  height="2"  fill="#8B5E3C"/>
           </svg>
           <div class="rule-text">
             <h3>Combate PvP</h3>
-            <p>El combate solo está permitido bajo duelo pactado o en eventos de rol. El PvP accidental o por trampa resulta en ban.</p>
+            <p>Solo bajo duelo pactado o en eventos de rol. PvP accidental = advertencia.</p>
           </div>
         </article>
 
-        <!-- Regla 4: Respeto -->
-        <article class="rule-card pre-animate" style="--rule-color: #4caf50;">
+        <article class="rule-card pre-animate" style="--rule-color:#4caf50">
           <span class="rule-badge rule-badge--ok">OBLIGATORIO</span>
-          <!-- Icono SVG: Corazón -->
-          <svg class="rule-icon" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <svg class="rule-icon" viewBox="0 0 32 32" aria-hidden="true">
             <rect x="4"  y="10" width="4"  height="4"  fill="#E53935"/>
             <rect x="8"  y="6"  width="4"  height="4"  fill="#E53935"/>
             <rect x="8"  y="10" width="4"  height="8"  fill="#E53935"/>
@@ -282,52 +248,38 @@
             <rect x="20" y="6"  width="4"  height="4"  fill="#E53935"/>
             <rect x="20" y="10" width="4"  height="8"  fill="#E53935"/>
             <rect x="24" y="10" width="4"  height="4"  fill="#E53935"/>
-            <rect x="8"  y="18" width="4"  height="4"  fill="#EF5350"/>
-            <rect x="20" y="18" width="4"  height="4"  fill="#EF5350"/>
-            <rect x="12" y="18" width="8"  height="4"  fill="#EF5350"/>
+            <rect x="8"  y="18" width="16" height="4"  fill="#EF5350"/>
             <rect x="12" y="22" width="8"  height="4"  fill="#E53935"/>
             <rect x="14" y="26" width="4"  height="2"  fill="#C62828"/>
-            <!-- Brillo -->
             <rect x="14" y="8"  width="3"  height="3"  fill="#FF8A80" opacity="0.6"/>
           </svg>
           <div class="rule-text">
             <h3>Respeto Mutuo</h3>
-            <p>Ambiente amigable y sin toxicidad. Insultos, acoso o discriminación resultan en expulsión inmediata.</p>
+            <p>Ambiente amigable. Insultos o toxicidad = expulsión inmediata.</p>
           </div>
         </article>
 
-        <!-- Regla 5: No Destruir Construcciones -->
-        <article class="rule-card pre-animate" style="--rule-color: #e53935;">
+        <article class="rule-card pre-animate" style="--rule-color:#e53935">
           <span class="rule-badge rule-badge--no">PROHIBIDO</span>
-          <!-- Icono SVG: Yunque -->
-          <svg class="rule-icon" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-            <!-- Parte superior del yunque -->
+          <svg class="rule-icon" viewBox="0 0 32 32" aria-hidden="true">
             <rect x="4"  y="6"  width="24" height="8"  fill="#707070"/>
             <rect x="5"  y="7"  width="22" height="6"  fill="#808080"/>
             <rect x="6"  y="8"  width="20" height="4"  fill="#909090"/>
-            <!-- Hendidura del yunque -->
             <rect x="4"  y="14" width="24" height="2"  fill="#606060"/>
-            <!-- Parte media (estrecha) -->
             <rect x="10" y="16" width="12" height="4"  fill="#707070"/>
-            <rect x="11" y="17" width="10" height="2"  fill="#808080"/>
-            <!-- Base -->
             <rect x="6"  y="20" width="20" height="6"  fill="#707070"/>
             <rect x="7"  y="21" width="18" height="4"  fill="#808080"/>
-            <!-- Brillo -->
             <rect x="6"  y="8"  width="4"  height="2"  fill="#A0A0A0"/>
           </svg>
           <div class="rule-text">
             <h3>No Griefing</h3>
-            <p>Prohibido destruir o alterar construcciones ajenas. Incluye granjas, casas y estructuras naturales modificadas.</p>
+            <p>Prohibido destruir construcciones ajenas. Incluye granjas y estructuras.</p>
           </div>
         </article>
 
-        <!-- Regla 6: Compartir recursos -->
-        <article class="rule-card pre-animate" style="--rule-color: #4caf50;">
+        <article class="rule-card pre-animate" style="--rule-color:#4caf50">
           <span class="rule-badge rule-badge--ok">COMUNIDAD</span>
-          <!-- Icono SVG: Escudo -->
-          <svg class="rule-icon" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-            <!-- Forma del escudo -->
+          <svg class="rule-icon" viewBox="0 0 32 32" aria-hidden="true">
             <rect x="8"  y="4"  width="16" height="2"  fill="#795548"/>
             <rect x="6"  y="6"  width="20" height="2"  fill="#795548"/>
             <rect x="4"  y="8"  width="24" height="14" fill="#8D6E63"/>
@@ -337,69 +289,59 @@
             <rect x="10" y="26" width="12" height="2"  fill="#6D4C41"/>
             <rect x="12" y="28" width="8"  height="2"  fill="#5D4037"/>
             <rect x="14" y="30" width="4"  height="2"  fill="#4E342E"/>
-            <!-- Cruz del escudo (decoración) -->
             <rect x="15" y="10" width="2"  height="12" fill="#5D4037"/>
             <rect x="10" y="15" width="12" height="2"  fill="#5D4037"/>
           </svg>
           <div class="rule-text">
             <h3>Colaboración</h3>
-            <p>Se fomenta compartir recursos con la comunidad. Los proyectos de servidor son de todos. ¡Construyan juntos!</p>
+            <p>Se fomenta compartir recursos. Los proyectos de servidor son de todos.</p>
           </div>
         </article>
 
-      </div><!-- /rules-grid -->
+      </div>
     </div>
   </section>
 
 
-  <!-- ════════════════════════════════════
-       SECCIÓN: REGISTRO
-  ════════════════════════════════════ -->
+  <!-- ══════════════════════════════════
+       REGISTRO
+  ══════════════════════════════════ -->
   <section id="register" aria-label="Formulario de registro">
     <div class="container">
 
       <header class="section-header pre-animate">
         <span class="section-tag">◈ UNIRSE AL REALM</span>
-        <h2>Solicitar un cupo</h2>
-        <p>Recibirás un correo de verificación. Solo jugadores verificados aparecen en el grid.</p>
+        <h2>Solicitar un Cupo</h2>
+        <p>Recibirás un correo de verificación. Solo verificados aparecen en el grid.</p>
       </header>
 
-      <div class="register-wrapper">
-
-        <!-- Formulario -->
+      <div class="register-wrapper pre-animate">
         <form
           id="registration-form"
-          class="pre-animate"
           action="https://api.web3forms.com/submit"
           method="POST"
           novalidate
         >
-          <!-- Web3Forms Access Key — REEMPLAZA CON LA TUYA -->
           <input type="hidden" name="access_key"   value="eaabffaf-9f3e-4cde-b248-2a71cb82e445" />
-          <input type="hidden" name="subject"       value="Nueva solicitud de registro — Realm Bedrock" />
-          <input type="hidden" name="from_name"     value="Realm Bedrock Website" />
+          <input type="hidden" name="subject"       value="Nueva solicitud — Realm Bedrock" />
+          <input type="hidden" name="from_name"     value="Realm Bedrock" />
           <input type="hidden" name="redirect"      value="false" />
 
-          <!-- Campo: Gamertag -->
           <div class="form-group">
-            <label for="input-nickname">GAMERTAG DE BEDROCK (XBOX)</label>
+            <label for="input-nickname">TU GAMERTAG (XBOX / BEDROCK)</label>
             <input
               id="input-nickname"
               class="form-input"
               type="text"
               name="nickname"
               placeholder="Ej: TuNombre123"
-              autocomplete="username"
               maxlength="16"
               required
-              aria-describedby="hint-nickname"
+              autocomplete="username"
             />
-            <p class="form-hint" id="hint-nickname" data-default="Tu nombre exacto en Xbox / Minecraft Bedrock.">
-              Tu nombre exacto en Xbox / Minecraft Bedrock.
-            </p>
+            <p class="form-hint" id="hint-nickname">Tu nombre exacto en Xbox / Minecraft Bedrock.</p>
           </div>
 
-          <!-- Campo: Correo -->
           <div class="form-group">
             <label for="input-email">CORREO ELECTRÓNICO</label>
             <input
@@ -408,119 +350,56 @@
               type="email"
               name="email"
               placeholder="tu@correo.com"
-              autocomplete="email"
               required
-              aria-describedby="hint-email"
+              autocomplete="email"
             />
-            <p class="form-hint" id="hint-email" data-default="Para recibir el enlace de verificación.">
-              Para recibir el enlace de verificación.
-            </p>
+            <p class="form-hint" id="hint-email">Para recibir tu enlace de verificación.</p>
           </div>
 
-          <!-- Checkbox de reglas -->
           <label class="form-check" for="check-rules">
-            <input
-              id="check-rules"
-              type="checkbox"
-              name="rules_accepted"
-              value="si"
-              required
-              aria-required="true"
-            />
-            <span>He leído y acepto las <a href="#rules">reglas del servidor</a>. Entiendo que el incumplimiento puede resultar en expulsión.</span>
+            <input id="check-rules" type="checkbox" name="rules_accepted" value="si" required />
+            <span>He leído y acepto las <a href="#rules">reglas del servidor</a>.</span>
           </label>
 
-          <!-- Botón submit -->
-          <button
-            type="submit"
-            class="mc-btn mc-btn--primary btn-submit"
-            id="btn-submit-register"
-          >
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
-              <path d="M2 7L6 11L12 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="square"/>
-            </svg>
-            ENVIAR SOLICITUD
+          <button type="submit" class="mc-btn mc-btn--primary btn-submit" id="btn-submit">
+            ▶ ENVIAR SOLICITUD
           </button>
-
-          <!-- Badges de seguridad -->
-          <div class="security-badges">
-            <span class="security-badge">
-              <svg viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                <path d="M6 1L10.5 3V7C10.5 9.5 8.5 11 6 11C3.5 11 1.5 9.5 1.5 7V3L6 1Z" stroke="currentColor" stroke-width="1"/>
-              </svg>
-              Sin servidor propio
-            </span>
-            <span class="security-badge">
-              <svg viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                <rect x="1" y="5" width="10" height="6" rx="0.5" stroke="currentColor" stroke-width="1"/>
-                <path d="M3 5V3.5C3 2.1 4.3 1 6 1C7.7 1 9 2.1 9 3.5V5" stroke="currentColor" stroke-width="1"/>
-              </svg>
-              Verificación por correo
-            </span>
-            <span class="security-badge">
-              <svg viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                <circle cx="6" cy="6" r="5" stroke="currentColor" stroke-width="1"/>
-                <path d="M4 6L5.5 7.5L8 4.5" stroke="currentColor" stroke-width="1" stroke-linecap="square"/>
-              </svg>
-              Anti-bots
-            </span>
-          </div>
 
         </form>
 
-        <!-- Mensaje de éxito (oculto hasta que el form se envíe) -->
-        <div id="success-message" role="alert" aria-live="assertive">
-          <span class="success-icon" aria-hidden="true">🎮</span>
+        <!-- Mensaje de éxito -->
+        <div id="success-message" role="alert">
+          <div class="success-icon">🎮</div>
           <h3>¡SOLICITUD ENVIADA!</h3>
-          <p>
-            Revisa tu correo y haz clic en el enlace de verificación.<br/>
-            Una vez verificado, tu skin aparecerá en el grid del servidor.
-          </p>
-          <br/>
-          <a href="#players" class="mc-btn mc-btn--secondary" style="margin-top:1rem;">
+          <p>Revisa tu correo y haz clic en el enlace de verificación.<br/>
+          Una vez verificado, tu skin aparecerá en el servidor.</p>
+          <a href="#players" class="mc-btn mc-btn--secondary" style="margin-top:1.5rem">
             VER JUGADORES
           </a>
         </div>
+      </div>
 
-      </div><!-- /register-wrapper -->
     </div>
   </section>
 
 
-  <!-- ════════════════════════════════════
+  <!-- ══════════════════════════════════
        FOOTER
-  ════════════════════════════════════ -->
+  ══════════════════════════════════ -->
   <footer>
     <div class="footer-inner">
-
       <p class="footer-title">◈ ÚNETE A LA COMUNIDAD ◈</p>
 
       <div class="footer-actions">
-        <!-- REEMPLAZA URL_DISCORD y URL_WHATSAPP con tus links reales -->
-        <a
-          href="URL_DISCORD"
-          class="mc-btn mc-btn--discord"
-          id="btn-footer-discord"
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label="Unirse al servidor de Discord"
-        >
-          <!-- Icono Discord -->
+        <a href="URL_DISCORD" class="mc-btn mc-btn--discord" id="btn-discord"
+           target="_blank" rel="noopener noreferrer">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
             <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057c.001.022.015.043.032.054a19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z"/>
           </svg>
           DISCORD
         </a>
-
-        <a
-          href="URL_WHATSAPP"
-          class="mc-btn mc-btn--whatsapp"
-          id="btn-footer-whatsapp"
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label="Unirse al grupo de WhatsApp"
-        >
-          <!-- Icono WhatsApp -->
+        <a href="URL_WHATSAPP" class="mc-btn mc-btn--whatsapp" id="btn-whatsapp"
+           target="_blank" rel="noopener noreferrer">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
             <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413z"/>
           </svg>
@@ -528,39 +407,20 @@
         </a>
       </div>
 
-      <!-- Coordenadas decorativas estilo Minecraft -->
-      <div class="footer-coords" aria-hidden="true">
-        <span>X</span> 0
-        <span>Y</span> 64
-        <span>Z</span> 0
-        &nbsp;·&nbsp;
-        <span>OVERWORLD</span>
-      </div>
-
       <div class="footer-divider"></div>
 
       <p class="footer-copy">
-        &copy; 2025 Realm Bedrock &nbsp;·&nbsp;
-        Hecho con ⛏ para la comunidad &nbsp;·&nbsp;
-        No afiliado con <a href="https://minecraft.net" target="_blank" rel="noopener">Mojang / Microsoft</a>
+        &copy; 2026 Realm Bedrock &nbsp;·&nbsp; No afiliado con
+        <a href="https://minecraft.net" target="_blank" rel="noopener">Mojang / Microsoft</a>
       </p>
-
     </div>
   </footer>
 
-
-  <!-- ════════════════════════════════════
-       BANNER DE AUDIO (toque para activar)
-  ════════════════════════════════════ -->
-  <div id="audio-banner" role="button" tabindex="0" aria-label="Activar sonidos del sitio">
-    <span class="audio-icon">🔇</span>
-    TOCA PARA ACTIVAR SONIDOS
+  <!-- Audio banner -->
+  <div id="audio-banner" role="button" tabindex="0" aria-label="Activar sonidos">
+    🔇 TOCA PARA SONIDOS
   </div>
 
-
-  <!-- ════════════════════════════════════
-       SCRIPTS (Módulos ES6)
-  ════════════════════════════════════ -->
   <script type="module" src="js/main.js"></script>
 
 </body>
