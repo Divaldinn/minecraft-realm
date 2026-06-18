@@ -1,0 +1,15 @@
+# Carpeta de Fuentes
+
+Coloca aquí el archivo de fuente Minecraft:
+
+- Minecraftia.ttf  → Fuente pixel art de Minecraft
+
+## ¿Dónde conseguirla?
+
+Descarga gratuita:
+https://www.dafont.com/minecraftia.font
+
+O busca "Minecraftia TTF" en Google.
+
+Sin este archivo, el sitio usará 'monospace' como fallback.
+La página sigue funcionando perfectamente sin la fuente.

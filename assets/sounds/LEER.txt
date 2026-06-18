@@ -1,0 +1,17 @@
+# Carpeta de Sonidos
+
+Coloca aquí los siguientes archivos MP3 (< 50kb cada uno):
+
+- click.mp3    → Se reproduce al hacer click en botones
+- hover.mp3    → Al pasar el mouse por botones  
+- pop.mp3      → Al pasar el mouse por tarjetas de reglas
+- success.mp3  → Al enviar el formulario exitosamente
+
+## ¿Dónde conseguirlos?
+
+Los sonidos originales de Minecraft están en:
+https://minecraft.wiki/w/Sounds.json
+
+Busca: ui.button.click, random.pop, random.levelup
+
+Exporta en formato .mp3 (no .ogg) para compatibilidad con iOS Safari.
