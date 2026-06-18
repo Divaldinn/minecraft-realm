@@ -9,6 +9,7 @@ import { initPlayerGrid, initStoryHero } from './api-handler.js';
 
 // ── INICIO ─────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
+  initLetterAnimation(); // ← PRIMERO: divide letras antes de que se vean
   initParticles();
   initNavbar();
   initScrollReveal();
@@ -19,6 +20,57 @@ document.addEventListener('DOMContentLoaded', () => {
   initPlayerGrid();
   initStoryHero();
 });
+
+// ════════════════════════════════════════
+// ANIMACIÓN LETRA POR LETRA — Estilo Trailer
+// ════════════════════════════════════════
+function initLetterAnimation() {
+  const title = document.querySelector('.hero-title');
+  if (!title) return;
+
+  const lines = title.querySelectorAll('.title-line');
+
+  lines.forEach((line, lineIdx) => {
+    const originalText = line.textContent.trim();
+    const isHighlight  = line.classList.contains('highlight');
+
+    // Limpiar el texto original
+    line.textContent = '';
+
+    // Crear un span por cada carácter
+    [...originalText].forEach((char, charIdx) => {
+      if (char === ' ') {
+        // Espacio: span invisible para mantener el gap
+        const sp = document.createElement('span');
+        sp.className = 'letter-space';
+        sp.setAttribute('aria-hidden', 'true');
+        line.appendChild(sp);
+        return;
+      }
+
+      const span = document.createElement('span');
+      span.className = 'letter' + (isHighlight ? ' highlight-letter' : '');
+      span.textContent = char;
+      span.setAttribute('aria-hidden', 'true');
+
+      // Delay: primero por línea, luego por posición dentro de la línea
+      // Cada letra tarda 60ms más que la anterior
+      const baseDelay  = lineIdx * 0.5;   // 0s para línea 1, 0.5s para línea 2
+      const charDelay  = charIdx * 0.07;  // 70ms entre letras
+      span.style.animationDelay = `${baseDelay + charDelay}s`;
+
+      line.appendChild(span);
+    });
+
+    // Añadir texto invisible accesible para lectores de pantalla
+    const ariaSpan = document.createElement('span');
+    ariaSpan.className = 'sr-only';
+    ariaSpan.textContent = originalText;
+    ariaSpan.style.cssText = 'position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)';
+    line.appendChild(ariaSpan);
+  });
+}
+
 
 // ════════════════════════════════════════
 // COUNTDOWN — 5 de Agosto 2026
