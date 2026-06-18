@@ -12,9 +12,27 @@ const CONFIG = {
 
 const state = { players: [] };
 
-// ── Skin URL (mc-heads acepta nombres directamente) ──
-function skinUrl(nickname) {
-  return `https://mc-heads.net/body/${encodeURIComponent(nickname)}/256`;
+// ── Skin Fallback Loader ──
+function tryLoadSkin(img, nickname, size, onSuccess, onError) {
+  const encName = encodeURIComponent(nickname);
+  const sources = [
+    `https://mc-heads.net/body/${encName}/${size}`,
+    `https://mineatar.io/body/${encName}/${size}.png`,
+    `https://cravatar.eu/helmavatar/${encName}/${size}.png`
+  ];
+  let attempt = 0;
+
+  img.onload = onSuccess;
+  img.onerror = () => {
+    attempt++;
+    if (attempt < sources.length) {
+      img.src = sources[attempt];
+    } else {
+      if (onError) onError();
+    }
+  };
+  // Iniciar la primera carga
+  img.src = sources[0];
 }
 
 // ── Cargar datos de jugadores ────────────────────────
@@ -76,17 +94,19 @@ function loadHeroChar(slot, nickname, delay) {
   setTimeout(() => {
     const img = new Image();
     img.alt   = nickname;
-    img.src   = skinUrl(nickname);
     img.style.cssText = 'width:100%;height:100%;object-fit:contain;object-position:bottom;image-rendering:pixelated;';
-    img.onload = () => {
-      slot.innerHTML = '';
-      slot.appendChild(img);
-      slot.classList.add('loaded');
-    };
-    img.onerror = () => {
-      // Fallback Steve
-      img.src = 'https://mc-heads.net/body/MHF_Steve/256';
-    };
+    
+    tryLoadSkin(img, nickname, 256, 
+      () => {
+        slot.innerHTML = '';
+        slot.appendChild(img);
+        slot.classList.add('loaded');
+      },
+      () => {
+        // Fallback total
+        img.src = 'https://mc-heads.net/body/MHF_Steve/256';
+      }
+    );
   }, delay);
 }
 
@@ -127,19 +147,22 @@ function loadGridSlot(slot, nickname) {
       
       const img = new Image();
       img.alt   = nickname;
-      img.src   = `https://mc-heads.net/body/${encodeURIComponent(nickname)}/128`;
-      img.onload = () => {
-        slot.innerHTML = '';
-        slot.appendChild(img);
-        const tag = document.createElement('span');
-        tag.className   = 'name-tag';
-        tag.textContent = nickname;
-        slot.appendChild(tag);
-        slot.classList.add('loaded');
-      };
-      img.onerror = () => {
-        slot.innerHTML = `<div class="slot-empty"></div>`;
-      };
+      
+      tryLoadSkin(img, nickname, 128,
+        () => {
+          slot.innerHTML = '';
+          slot.appendChild(img);
+          const tag = document.createElement('span');
+          tag.className   = 'name-tag';
+          tag.textContent = nickname;
+          slot.appendChild(tag);
+          slot.classList.add('loaded');
+        },
+        () => {
+          slot.innerHTML = `<div class="slot-empty"></div>`;
+        }
+      );
+      
       o.unobserve(slot);
     }
   }, { rootMargin: '100px' });
