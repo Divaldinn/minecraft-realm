@@ -47,7 +47,11 @@ async function loadPlayers() {
             .replace(/\);?\s*$/, '')
       );
       state.players = (json.table?.rows || [])
-        .map(r => ({ nickname: r.c[0]?.v || '', status: r.c[2]?.v || '' }))
+        .map(r => ({ 
+          nickname: r.c[1]?.v || '', 
+          status: r.c[2]?.v || '',
+          customSkin: r.c[3]?.v || '' 
+        }))
         .filter(p => p.nickname && p.status === 'Aprobado');
       return;
     } catch {}
@@ -82,7 +86,8 @@ export async function initStoryHero() {
     if (!slot) continue;
 
     if (i < verified.length) {
-      loadHeroChar(slot, verified[i].nickname, i * 150);
+      const p = verified[i];
+      loadHeroChar(slot, p.nickname, p.customSkin, i * 150);
     } else {
       // Slot vacío — mostrar silueta oscura
       slot.innerHTML = `<div class="char-empty"></div>`;
@@ -90,23 +95,33 @@ export async function initStoryHero() {
   }
 }
 
-function loadHeroChar(slot, nickname, delay) {
+function loadHeroChar(slot, nickname, customSkin, delay) {
   setTimeout(() => {
     const img = new Image();
     img.alt   = nickname;
     img.style.cssText = 'width:100%;height:100%;object-fit:contain;object-position:bottom;image-rendering:pixelated;';
     
-    tryLoadSkin(img, nickname, 256, 
-      () => {
+    if (customSkin && customSkin.startsWith('http')) {
+      img.src = customSkin;
+      img.onload = () => {
         slot.innerHTML = '';
         slot.appendChild(img);
         slot.classList.add('loaded');
-      },
-      () => {
-        // Fallback total
-        img.src = 'https://mc-heads.net/body/MHF_Steve/256';
-      }
-    );
+      };
+      img.onerror = () => { img.src = 'https://mc-heads.net/body/MHF_Steve/256'; };
+    } else {
+      tryLoadSkin(img, nickname, 256, 
+        () => {
+          slot.innerHTML = '';
+          slot.appendChild(img);
+          slot.classList.add('loaded');
+        },
+        () => {
+          // Fallback total
+          img.src = 'https://mc-heads.net/body/MHF_Steve/256';
+        }
+      );
+    }
   }, delay);
 }
 
@@ -126,7 +141,8 @@ export async function initPlayerGrid() {
     if (!slot) continue;
 
     if (i < verified.length) {
-      loadGridSlot(slot, verified[i].nickname);
+      const p = verified[i];
+      loadGridSlot(slot, p.nickname, p.customSkin);
     } else {
       slot.innerHTML = `<div class="slot-empty"></div>`;
     }
@@ -137,7 +153,7 @@ export async function initPlayerGrid() {
   if (countEl) animateCounter(countEl, 0, verified.length, 1000);
 }
 
-function loadGridSlot(slot, nickname) {
+function loadGridSlot(slot, nickname, customSkin) {
   if (slot.dataset.loaded) return;
   
   const obs = new IntersectionObserver((entries, o) => {
@@ -148,20 +164,27 @@ function loadGridSlot(slot, nickname) {
       const img = new Image();
       img.alt   = nickname;
       
-      tryLoadSkin(img, nickname, 128,
-        () => {
-          slot.innerHTML = '';
-          slot.appendChild(img);
-          const tag = document.createElement('span');
-          tag.className   = 'name-tag';
-          tag.textContent = nickname;
-          slot.appendChild(tag);
-          slot.classList.add('loaded');
-        },
-        () => {
-          slot.innerHTML = `<div class="slot-empty"></div>`;
-        }
-      );
+      const onSuccess = () => {
+        slot.innerHTML = '';
+        slot.appendChild(img);
+        const tag = document.createElement('span');
+        tag.className   = 'name-tag';
+        tag.textContent = nickname;
+        slot.appendChild(tag);
+        slot.classList.add('loaded');
+      };
+      
+      if (customSkin && customSkin.startsWith('http')) {
+        img.src = customSkin;
+        img.onload = onSuccess;
+        img.onerror = () => { slot.innerHTML = `<div class="slot-empty"></div>`; };
+      } else {
+        tryLoadSkin(img, nickname, 128, onSuccess,
+          () => {
+            slot.innerHTML = `<div class="slot-empty"></div>`;
+          }
+        );
+      }
       
       o.unobserve(slot);
     }
