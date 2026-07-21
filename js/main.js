@@ -299,7 +299,6 @@ function initFormValidation() {
 
   const nicknameInput = document.getElementById('input-nickname');
   const emailInput    = document.getElementById('input-email');
-  const checkboxEl    = document.getElementById('check-rules');
   const submitBtn     = form.querySelector('#btn-submit');
 
   const validators = {
@@ -336,10 +335,7 @@ function initFormValidation() {
     e.preventDefault();
     const okN = validateField(nicknameInput, 'nickname');
     const okE = validateField(emailInput,    'email');
-    if (!checkboxEl?.checked) {
-      checkboxEl.parentElement.style.outline = '2px solid var(--mc-red)';
-      return;
-    }
+
     if (!okN || !okE) return;
 
     submitBtn.disabled   = true;
