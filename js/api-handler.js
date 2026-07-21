@@ -105,7 +105,12 @@ function loadHeroChar(slot, nickname, customSkin, delay) {
       img.src = customSkin;
       img.onload = () => {
         slot.innerHTML = '';
-        slot.appendChild(img);
+        const a = document.createElement('a');
+        a.href = `https://bedrockviewer.com/profile/${encodeURIComponent(nickname)}`;
+        a.target = '_blank';
+        a.style.cssText = 'display:block;width:100%;height:100%;';
+        a.appendChild(img);
+        slot.appendChild(a);
         slot.classList.add('loaded');
       };
       img.onerror = () => { img.src = 'https://mc-heads.net/body/MHF_Steve/256'; };
@@ -113,7 +118,12 @@ function loadHeroChar(slot, nickname, customSkin, delay) {
       tryLoadSkin(img, nickname, 256, 
         () => {
           slot.innerHTML = '';
-          slot.appendChild(img);
+          const a = document.createElement('a');
+          a.href = `https://bedrockviewer.com/profile/${encodeURIComponent(nickname)}`;
+          a.target = '_blank';
+          a.style.cssText = 'display:block;width:100%;height:100%;';
+          a.appendChild(img);
+          slot.appendChild(a);
           slot.classList.add('loaded');
         },
         () => {
@@ -166,11 +176,18 @@ function loadGridSlot(slot, nickname, customSkin) {
       
       const onSuccess = () => {
         slot.innerHTML = '';
-        slot.appendChild(img);
+        const a = document.createElement('a');
+        a.href = `https://bedrockviewer.com/profile/${encodeURIComponent(nickname)}`;
+        a.target = '_blank';
+        a.style.cssText = 'display:block;width:100%;height:100%;text-decoration:none;';
+        a.appendChild(img);
+        
         const tag = document.createElement('span');
         tag.className   = 'name-tag';
         tag.textContent = nickname;
-        slot.appendChild(tag);
+        a.appendChild(tag);
+        
+        slot.appendChild(a);
         slot.classList.add('loaded');
       };
       
