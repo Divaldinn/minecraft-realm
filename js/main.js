@@ -346,6 +346,8 @@ function initFormValidation() {
       const formData = new FormData(form);
       // Ensure gamertag is the key expected by the script
       formData.set('gamertag', nicknameInput.value);
+      // Ensure the script receives the rules field since the checkbox was removed
+      formData.set('rules', 'on');
 
       const res  = await fetch('https://script.google.com/macros/s/AKfycbxzCX0dM3Xtrc7Mk80YuQM-aiKB5AhnXsChBHz0KD3lDGIToWStbHUbg_R5Ki32A5RTgQ/exec', { 
         method: 'POST', 

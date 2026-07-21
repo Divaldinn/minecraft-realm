@@ -13,26 +13,77 @@ const CONFIG = {
 const state = { players: [] };
 
 // ── Skin Fallback Loader ──
-function tryLoadSkin(img, nickname, size, onSuccess, onError) {
+async function tryLoadSkin(img, nickname, size, onSuccess, onError) {
   const encName = encodeURIComponent(nickname);
-  const sources = [
+  const javaSources = [
     `https://mc-heads.net/body/${encName}/${size}`,
     `https://mineatar.io/body/${encName}/${size}.png`,
     `https://cravatar.eu/helmavatar/${encName}/${size}.png`
   ];
   let attempt = 0;
 
-  img.onload = onSuccess;
-  img.onerror = () => {
-    attempt++;
-    if (attempt < sources.length) {
-      img.src = sources[attempt];
-    } else {
-      if (onError) onError();
-    }
+  const tryJavaFallbacks = () => {
+    img.onload = onSuccess;
+    img.onerror = () => {
+      attempt++;
+      if (attempt < javaSources.length) {
+        img.src = javaSources[attempt];
+      } else {
+        if (onError) onError();
+      }
+    };
+    img.src = javaSources[0];
   };
-  // Iniciar la primera carga
-  img.src = sources[0];
+
+  // Intentar cargar la skin de Bedrock primero dibujándola en un canvas 2D
+  try {
+    const res = await fetch(`https://api.geysermc.org/v2/xbox/xuid/${encName}`);
+    if (!res.ok) throw new Error();
+    const data = await res.json();
+    if (!data.xuid) throw new Error();
+
+    const skinImg = new Image();
+    skinImg.crossOrigin = 'Anonymous';
+    skinImg.onload = () => {
+      if (skinImg.width !== 64) { tryJavaFallbacks(); return; }
+      const cvs = document.createElement('canvas');
+      cvs.width = 16; cvs.height = 32;
+      const ctx = cvs.getContext('2d');
+      // Cabeza
+      ctx.drawImage(skinImg, 8, 8, 8, 8, 4, 0, 8, 8);
+      ctx.drawImage(skinImg, 40, 8, 8, 8, 4, 0, 8, 8);
+      // Cuerpo
+      ctx.drawImage(skinImg, 20, 20, 8, 12, 4, 8, 8, 12);
+      if (skinImg.height >= 64) ctx.drawImage(skinImg, 20, 36, 8, 12, 4, 8, 8, 12);
+      // Brazo Derecho
+      ctx.drawImage(skinImg, 44, 20, 4, 12, 0, 8, 4, 12);
+      if (skinImg.height >= 64) ctx.drawImage(skinImg, 44, 36, 4, 12, 0, 8, 4, 12);
+      // Brazo Izquierdo
+      if (skinImg.height >= 64) {
+        ctx.drawImage(skinImg, 36, 52, 4, 12, 12, 8, 4, 12);
+        ctx.drawImage(skinImg, 52, 52, 4, 12, 12, 8, 4, 12);
+      } else {
+        ctx.drawImage(skinImg, 44, 20, 4, 12, 12, 8, 4, 12);
+      }
+      // Pierna Derecha
+      ctx.drawImage(skinImg, 4, 20, 4, 12, 4, 20, 4, 12);
+      if (skinImg.height >= 64) ctx.drawImage(skinImg, 4, 36, 4, 12, 4, 20, 4, 12);
+      // Pierna Izquierda
+      if (skinImg.height >= 64) {
+        ctx.drawImage(skinImg, 20, 52, 4, 12, 8, 20, 4, 12);
+        ctx.drawImage(skinImg, 4, 52, 4, 12, 8, 20, 4, 12);
+      } else {
+        ctx.drawImage(skinImg, 4, 20, 4, 12, 8, 20, 4, 12);
+      }
+      img.onload = onSuccess;
+      img.onerror = tryJavaFallbacks;
+      img.src = cvs.toDataURL('image/png');
+    };
+    skinImg.onerror = tryJavaFallbacks;
+    skinImg.src = `https://api.geysermc.org/v2/skin/${data.xuid}`;
+  } catch (e) {
+    tryJavaFallbacks();
+  }
 }
 
 // ── Cargar datos de jugadores ────────────────────────
